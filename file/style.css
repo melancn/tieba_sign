@@ -1,0 +1,93 @@
+*{
+	margin:0;
+	font-family:Arial,'微软雅黑';
+	color:#888;
+	border: 0;
+	padding: 0;
+	background: transparent;
+}
+body {
+	background:#ddd url('data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAABQAAD/7gAmQWRvYmUAZMAAAAABAwAVBAMGCg0AAAItAAACbgAAA1kAAASI/9sAhAACAgICAgICAgICAwICAgMEAwICAwQFBAQEBAQFBgUFBQUFBQYGBwcIBwcGCQkKCgkJDAwMDAwMDAwMDAwMDAwMAQMDAwUEBQkGBgkNCwkLDQ8ODg4ODw8MDAwMDA8PDAwMDAwMDwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wgARCABkAEMDAREAAhEBAxEB/8QAlAABAQEBAQAAAAAAAAAAAAAAAAIBAwgBAQAAAAAAAAAAAAAAAAAAAAAQAAICAwEBAAAAAAAAAAAAAAARATEQICEwYBEAAQUBAAAAAAAAAAAAAAAAIAABIVGBEBIBAAAAAAAAAAAAAAAAAAAAYBMAAQIEBQQDAQEAAAAAAAAAAQARITFBURAgYZGh8HGBsTBg0cHh/9oADAMBAAIRAxEAAAH3MDTSTSTTCwSQYdCgCTDTTAAUYaASUDDkdgASUAczoACSgDmdASYDSgczQUaDCQczqDCwSASdACDDoAczoACSgDmdAASUAczoACSgDmf/2gAIAQEAAQUCHmKHhRlZWjOixFI6PaKytYrwitmdOwPRsWqKHAjo8s6LVeUV4RXhFaf/2gAIAQIAAQUC+1//2gAIAQMAAQUC+1//2gAIAQICBj8Ca//aAAgBAwIGPwJr/9oACAEBAQY/AgbkFaoqV8blmwaLBosGhSsNUKSlb2grmjMhosGiwaLBq//aAAgBAQMBPyFiJHwVqHlODIvhwFKaikdMTM+BkiBjynND11QJYPA00AnPXIzzZRUTVg4CZSHZQIztocAAJZOBjNMaXQ5eBkp0rl4GSnSuLO+gUSeAmVh3xp0qnSPJUUz6KWTQWTnQuoW7lMPe6gkX7rViZSPZRV8EzublU6VyMpA6IBwDkKdK5eBkp0rl4GSnSuXgZKdKr//aAAgBAgMBPyH7r//aAAgBAwMBPyH7r//aAAwDAQACEQMRAAAQAgkggEkAAkEgAEAEAkAAgAAAEAAAEgAAkAkEggAEAAkAAAAgAAAEAAAAgAH/2gAIAQEDAT8QrPc5mnCBxoiP3hABwBojIrjPSJAOQAuVcNUhuVZI7HM1oG8zPfEkSgbYHdNQaCn+IJvk0DMd4XkEDdoRfIQwd7ESnlAFzE7IDWS1ltJSDAMLLjPSLzkTvBxJaQDSB/EDli5GgxwAMAAsMTIrjPWJABiARYqamg8QNtkMiuM9fBzIrjPWfkJYF3cKeUABvE/iAAAGAGAkfxSA47QZOAIDXP4FcNgbBAAGAYWGJAIYhxqmiJtIlsURnAGwW4P6pR42KRIxTNYgdwmkAikB3CYJT3S3QLh7owD0TxZ59JyTTgDyO6AS5HkDl5A5deg4khkxIgFjKOkkIBhAWz8yK4z18HMiuM9fBzIrjPWX/wD/2gAIAQIDAT8Q+6//2gAIAQMDAT8Q+6//2Q==') repeat top left;
+	font-weight:300;
+	font-size:14px;
+	-webkit-font-smoothing:antialiased;
+}
+.top{
+	margin:10px;
+	padding:20px 10px 10px 10px;
+	position:relative;
+	display:block;
+	text-shadow:1px 1px 1px rgba(0,0,0,0.2);
+	text-align:center;
+}
+h1 {
+	font-size:30px;
+	line-height:32px;
+	position:relative;
+	font-weight:100;
+	color:#666;
+}
+h2{
+	font-weight:300;
+	margin-bottom: 10px;
+}
+.top p {
+padding:15px 0 5px 0;
+}
+.main{
+	width:1250px;
+	margin:0 auto 50px auto;
+}
+/*表格*/
+table{
+	width:100%;
+}
+th ,td{
+	border:1px solid rgba(193, 218, 215, 0.3);
+	padding:6px;
+	text-align:center;
+}
+th{
+	background:rgba(96, 201, 207, 0.2);
+}
+tr:nth-child(odd) td{
+	background:rgba(202, 232, 234, 0.2);
+}
+input[type="text"],input[type="password"]{
+	text-align: center;
+	font-size:14px;
+	width: 100%;
+	height: 100%;
+}
+button,input[type="submit"]{
+	padding: 1px 10px;
+	border-radius: 3px;
+	border: solid 2px #209add;
+	margin: 0 1px;
+	text-transform: uppercase;
+	transition: all 0.3s ease-in 0s;
+	cursor: pointer;
+	float: left;
+}
+button:hover,input[type="submit"]:hover{
+border-color: #209add;
+background: #209add;
+color: white;
+}
+button:disabled, button[disabled], button.disabled {
+box-shadow: none;
+opacity: .5;
+}
+/*选中文字颜色 139,167,201*/
+::selection {
+    background: rgba(139, 167, 201, 0.6);
+	color: white;
+}
+::-moz-selection {
+    background: rgba(139, 167, 201, 0.6);
+	color: white;
+}
+::-webkit-selection {
+    background: rgba(139, 167, 201, 0.6);
+	color: white;
+}

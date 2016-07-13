@@ -1,0 +1,28 @@
+button,input[type="submit"]{
+	padding: 5px;
+	font-size: 15px;
+	margin:2px;
+}
+.main{
+	width: 530px;
+	background:rgba(255,255,255,0.5);
+	box-shadow:1px 1px 4px rgba(0,0,0,0.2);
+	padding:20px 25px 50px 25px;
+}
+td:nth-child(2){
+	padding: 0;
+}
+input[type="text"],input[type="password"]{
+	border-radius: 3px;
+	border:solid 2px rgba(32, 154, 221, 0.3);
+	transition: all 0.3s ease-in 0s;
+}
+input[type="text"]:hover, input[type="password"]:hover{
+	border: solid 2px #209add;
+}
+input[type="submit"]{
+	width: 100%;
+}
+a button{
+	width: 100%;
+}

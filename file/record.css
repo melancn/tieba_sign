@@ -1,0 +1,12 @@
+button{
+	padding: 5px;
+	font-size: 15px;
+	margin:2px;
+}
+.main{
+	background:rgba(255,255,255,0.5);
+	box-shadow:1px 1px 4px rgba(0,0,0,0.2);
+	padding:20px 25px;
+}
+h2{float:left}
+.br{float:right;margin-top:-5px}
