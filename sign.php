@@ -24,6 +24,7 @@ class tiebasign{
     
     private function _init_bduss(){
         $res = $this->db->query("SELECT uid,cookie,cname FROM sign_notes WHERE end_sign < CURRENT_DATE() AND ct=1 ORDER BY now_sign ASC LIMIT 1;")->fetch();
+        if(empty($res)) return false;
         $this->uid = $res['uid'];
         preg_match('/BDUSS=(.*?);/', $res['cookie'], $matches);
         if($matches[1]) $this->bduss = $matches[1]; else exit('bduss');
@@ -175,7 +176,7 @@ class tiebasign{
         
         $this->db->query("UPDATE sign_notes SET last_sign = CURRENT_DATE(),now_sign=SELECT CURTIME() WHERE uid={$this->uid}");
         //签到完成检查是否都签到成功
-        $this->getmylike()；
+        $this->getmylike();
         if(empty($this->forumid)){
             $this->db->query("UPDATE sign_notes SET end_sign = CURRENT_DATE() WHERE uid={$this->uid}");
         }
