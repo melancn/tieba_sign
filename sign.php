@@ -10,6 +10,7 @@ class tiebasign{
     private $tbs;
     private $mslevel;
     private $forumid;
+    private $forum_name;
     
     const mylikeurl = 'http://c.tieba.baidu.com/c/f/forum/getforumlist';
     const signurl = 'http://c.tieba.baidu.com/c/c/forum/sign';
@@ -71,6 +72,7 @@ class tiebasign{
         foreach ($jsonobj['forum_info'] as $key => $value) {
             if($value['is_sign_in'] == 1)continue;
             $forumid[$value['forum_id']] = $value['user_level'];
+            $forum_name[$value['forum_id']] = $value['forum_name'];
             $pre = $this->db->prepare("INSERT INTO tieba_list (kw_name,forumid,level,uid) VALUES (:kw_name,:forumid,:level,:uid)");
             $pre->bindParam(':kw_name',$value['forum_name']);
             $pre->bindParam(':forumid',$value['forum_id']);
@@ -81,6 +83,7 @@ class tiebasign{
             if($errorInfo[0] != 0) var_dump($errorInfo[2]);
         }
         $this->forumid = $forumid;
+        $this->forum_name = $forum_name;
         $i = count($jsonobj['forum_info']);
         $this->db->query("UPDATE sign_notes SET tnum = $i WHERE uid={$this->uid}");
         echo "获取结束,一共[ $i ]个贴吧。<br/>";
@@ -139,14 +142,42 @@ class tiebasign{
             );
             foreach ($s_forumid as $forumid) {
                 $pda['fid'] = $forumid;
+                $pda['kw'] = $this->forum_name[$forumid];
                 $result = curl_post($pda,self::signurl);
                 $jsonobj = json_decode($result,1);var_dump($jsonobj);
                 if($jsonobj['error_code'] == 0 ){
+                    if($jsonobj['user_info']['is_sign_in'] == 1){
+                        $pre = $this->db->prepare("INSERT INTO history_notes (kw,uid,type,hdate) VALUES (:kw_name,:uid,1,CURRENT_DATE())");
+                        $pre->bindParam(':kw_name',$this->forum_name[$forumid]);
+                        $pre->bindParam(':uid',$this->uid);
+                        $pre->execute();
+                        $errorInfo = $pre->errorInfo();
+                        if($errorInfo[0] != 0) var_dump($errorInfo[2]);
+                        $pre = $this->db->prepare("DELETE FROM tieba_list WHERE kw_name = :kw_name AND uid=:uid");
+                        $pre->bindParam(':kw_name',$this->forum_name[$forumid]);
+                        $pre->bindParam(':uid',$this->uid);
+                        $pre->execute();
+                        $errorInfo = $pre->errorInfo();
+                        if($errorInfo[0] != 0) var_dump($errorInfo[2]);
+                    }
                     
                 }else{
-                    
+                    $pre = $this->db->prepare("INSERT INTO error_code (code,usermsg,errmsg) VALUES (:code,:usermsg,:errmsg)");
+                    $pre->bindParam(':code',$jsonobj['error_code']);
+                    $pre->bindParam(':usermsg',$forumid);
+                    $pre->bindParam(':errmsg',$jsonobj['error_msg']);
+                    $pre->execute();
+                    $errorInfo = $pre->errorInfo();
+                    if($errorInfo[0] != 0) var_dump($errorInfo[2]);
                 }
             }
+        }
+        
+        $this->db->query("UPDATE sign_notes SET last_sign = CURRENT_DATE(),now_sign=SELECT CURTIME() WHERE uid={$this->uid}");
+        //签到完成检查是否都签到成功
+        $this->getmylike()；
+        if(empty($this->forumid)){
+            $this->db->query("UPDATE sign_notes SET end_sign = CURRENT_DATE() WHERE uid={$this->uid}");
         }
         
     }
