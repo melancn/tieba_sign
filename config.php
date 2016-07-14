@@ -6,7 +6,8 @@ $config = array(
         'port' => 3306,
         'user' => '',
         'password' => '',
-        'dbname' => ''
+        'dbname' => '',
+        'charset' => 'utf8'
     ),
     'login' => array(
         'username' => '',
