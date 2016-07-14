@@ -2,7 +2,7 @@
 session_start();
 $config = include('config.php');
 
-if(!isset($_SESSION['username']) && !empty($config['login']['username'])){
+if($config['login'] && empty($_SESSION['uid'])){
 	header("Location:index.php");
 	exit();
 }

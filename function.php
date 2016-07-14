@@ -57,15 +57,15 @@ function testcookie($cookie){
     preg_match('/BDUSS=(.+?);/', $cookie, $matches);
     if(!$matches[1]) exit('{"msg":"cooike错误,未提交","no":1}');
     $islogin = "http://tieba.baidu.com/dc/common/tbs?t=".time();
-    $check = json_decode(curl_get($islogin,$cookie));
+    $check = json_decode(curl_get($islogin,$matches[1]));
     if (!$check->is_login){
 		echo '{"msg":"cooike错误,未提交","no":1}';
         exit();
     }
     $mylikeurl="http://c.tieba.baidu.com/c/f/forum/like";
     $pda = array('BDUSS' => $matches[1]);
-    $result = curl_post($pda,$this->mylikeurl);
-    $jsonobj = json_decode($result);
-    $i = count($jsonobj->forum_list);
+    $result = curl_post($pda,$mylikeurl);
+    $jsonobj = json_decode($result,1);
+    $i = count($jsonobj['forum_list']['non-gconforum'])+count($jsonobj['forum_list']['gconforum']);
     return $i;
 }

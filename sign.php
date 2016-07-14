@@ -6,6 +6,7 @@ header("content-Type: text/html; charset=utf-8");
 class tiebasign{
     private $db;
     private $uid;
+    private $cid;
     private $bduss;
     private $tbs;
     private $mslevel;
@@ -23,16 +24,17 @@ class tiebasign{
     }
     
     private function _init_bduss(){
-        $res = $this->db->query("SELECT uid,cookie,cname FROM sign_notes WHERE end_sign < CURRENT_DATE() AND ct=1 ORDER BY now_sign ASC LIMIT 1;")->fetch();
+        $res = $this->db->query("SELECT uid,cid,cookie FROM tieba_sign_cookies WHERE end_sign < CURRENT_DATE() AND status=1 ORDER BY last_sign ASC LIMIT 1;")->fetch();
         if(empty($res)) return false;
         $this->uid = $res['uid'];
+        $this->cid = $res['cid'];
         preg_match('/BDUSS=(.*?);/', $res['cookie'], $matches);
         if($matches[1]) $this->bduss = $matches[1]; else exit('bduss');
         
         $check = json_decode(curl_get(self::tbsurl,$this->bduss,false));
         if (!$check->is_login){
-            $pre = $this->db->prepare("UPDATE sign_notes SET ct = 2 WHERE uid=:uid");
-            $pre->bindParam(':uid',$this->uid);
+            $pre = $this->db->prepare("UPDATE tieba_sign_cookies SET status = 0 WHERE cid=:cid");
+            $pre->bindParam(':cid',$this->cid);
             $pre->execute();
             $errorInfo = $pre->errorInfo();
             if($errorInfo[0] != 0) var_dump($errorInfo[2]);
@@ -50,9 +52,8 @@ class tiebasign{
     
     public function getmylike(){
         $day = date('Y-m-d');
-        $pre = $this->db->prepare("UPDATE sign_notes SET last_sign = :day WHERE uid=:uid");
-        $pre->bindParam(':day',$day);
-        $pre->bindParam(':uid',$this->uid);
+        $pre = $this->db->prepare("UPDATE tieba_sign_cookies SET last_sign = CURRENT_TIMESTAMP() WHERE cid=:cid");
+        $pre->bindParam(':cid',$this->cid);
         $pre->execute();
         $errorInfo = $pre->errorInfo();
         if($errorInfo[0] != 0) var_dump($errorInfo[2]);
@@ -61,12 +62,12 @@ class tiebasign{
         );
         $result = curl_post($pda,self::mylikeurl);
         $jsonobj = json_decode($result,1);
-        $pre = $this->db->prepare("replace into tieba_signlevel set level=:level, uid=:uid");
+        /* $pre = $this->db->prepare("replace into tieba_signlevel set level=:level, uid=:uid");
         $pre->bindParam(':level',$jsonobj['level']);
         $pre->bindParam(':uid',$this->uid);
         $pre->execute();
         $errorInfo = $pre->errorInfo();
-        if($errorInfo[0] != 0) var_dump($errorInfo[2]);
+        if($errorInfo[0] != 0) var_dump($errorInfo[2]); */
         $this->mslevel = $jsonobj['level'];
         
         $forumid = array();
@@ -74,19 +75,19 @@ class tiebasign{
             if($value['is_sign_in'] == 1)continue;
             $forumid[$value['forum_id']] = $value['user_level'];
             $forum_name[$value['forum_id']] = $value['forum_name'];
-            $pre = $this->db->prepare("INSERT INTO tieba_list (kw_name,forumid,level,uid) VALUES (:kw_name,:forumid,:level,:uid)");
+            /* $pre = $this->db->prepare("INSERT INTO tieba_list (kw_name,forumid,level,uid) VALUES (:kw_name,:forumid,:level,:uid)");
             $pre->bindParam(':kw_name',$value['forum_name']);
             $pre->bindParam(':forumid',$value['forum_id']);
             $pre->bindParam(':level',$value['user_level']);
             $pre->bindParam(':uid',$this->uid);
             $pre->execute();
             $errorInfo = $pre->errorInfo();
-            if($errorInfo[0] != 0) var_dump($errorInfo[2]);
+            if($errorInfo[0] != 0) var_dump($errorInfo[2]); */
         }
         $this->forumid = $forumid;
         $this->forum_name = $forum_name;
         $i = count($jsonobj['forum_info']);
-        $this->db->query("UPDATE sign_notes SET tnum = $i WHERE uid={$this->uid}");
+        $this->db->query("UPDATE tieba_sign_cookies SET forum_num = $i WHERE cid={$this->cid}");
         echo "获取结束,一共[ $i ]个贴吧。<br/>";
         return true;
     }
@@ -110,22 +111,23 @@ class tiebasign{
                 if($jsonobj['error']['errno'] == 0){
                     foreach ($jsonobj['info'] as $forum) {
                         if($forum['signed'] == 1){
-                            $pre = $this->db->prepare("INSERT INTO history_notes (kw,uid,type,hdate) VALUES (:kw_name,:uid,1,CURRENT_DATE())");
+                            $pre = $this->db->prepare("INSERT INTO tieba_sign_history (kw,cid,uid,type,time) VALUES (:kw_name,:cid,:uid,1,CURRENT_TIMESTAMP())");
                             $pre->bindParam(':kw_name',$forum['forum_name']);
+                            $pre->bindParam(':cid',$this->cid);
                             $pre->bindParam(':uid',$this->uid);
                             $pre->execute();
                             $errorInfo = $pre->errorInfo();
                             if($errorInfo[0] != 0) var_dump($errorInfo[2]);
-                            $pre = $this->db->prepare("DELETE FROM tieba_list WHERE kw_name = :kw_name AND uid=:uid");
+                            /* $pre = $this->db->prepare("DELETE FROM tieba_list WHERE kw_name = :kw_name AND uid=:uid");
                             $pre->bindParam(':kw_name',$forum['forum_name']);
                             $pre->bindParam(':uid',$this->uid);
                             $pre->execute();
                             $errorInfo = $pre->errorInfo();
-                            if($errorInfo[0] != 0) var_dump($errorInfo[2]);
+                            if($errorInfo[0] != 0) var_dump($errorInfo[2]); */
                         }
                     }
                 }else{
-                    $pre = $this->db->prepare("INSERT INTO error_code (code,usermsg,errmsg) VALUES (:code,:usermsg,:errmsg)");
+                    $pre = $this->db->prepare("INSERT INTO tieba_sign_error_code (code,usermsg,errmsg) VALUES (:code,:usermsg,:errmsg)");
                     $pre->bindParam(':code',$jsonobj['error']['errno']);
                     $pre->bindParam(':usermsg',$jsonobj['error']['usermsg']);
                     $pre->bindParam(':errmsg',$jsonobj['error']['errmsg']);
@@ -148,22 +150,23 @@ class tiebasign{
                 $jsonobj = json_decode($result,1);var_dump($jsonobj);
                 if($jsonobj['error_code'] == 0 ){
                     if($jsonobj['user_info']['is_sign_in'] == 1){
-                        $pre = $this->db->prepare("INSERT INTO history_notes (kw,uid,type,hdate) VALUES (:kw_name,:uid,1,CURRENT_DATE())");
-                        $pre->bindParam(':kw_name',$this->forum_name[$forumid]);
+                        $pre = $this->db->prepare("INSERT INTO tieba_sign_history (kw,cid,uid,type,time) VALUES (:kw_name,:cid,:uid,1,CURRENT_TIMESTAMP())");
+                        $pre->bindParam(':kw_name',$forum['forum_name']);
+                        $pre->bindParam(':cid',$this->cid);
                         $pre->bindParam(':uid',$this->uid);
                         $pre->execute();
                         $errorInfo = $pre->errorInfo();
                         if($errorInfo[0] != 0) var_dump($errorInfo[2]);
-                        $pre = $this->db->prepare("DELETE FROM tieba_list WHERE kw_name = :kw_name AND uid=:uid");
+                        /* $pre = $this->db->prepare("DELETE FROM tieba_list WHERE kw_name = :kw_name AND uid=:uid");
                         $pre->bindParam(':kw_name',$this->forum_name[$forumid]);
                         $pre->bindParam(':uid',$this->uid);
                         $pre->execute();
                         $errorInfo = $pre->errorInfo();
-                        if($errorInfo[0] != 0) var_dump($errorInfo[2]);
+                        if($errorInfo[0] != 0) var_dump($errorInfo[2]); */
                     }
                     
                 }else{
-                    $pre = $this->db->prepare("INSERT INTO error_code (code,usermsg,errmsg) VALUES (:code,:usermsg,:errmsg)");
+                    $pre = $this->db->prepare("INSERT INTO tieba_sign_error_code (code,usermsg,errmsg) VALUES (:code,:usermsg,:errmsg)");
                     $pre->bindParam(':code',$jsonobj['error_code']);
                     $pre->bindParam(':usermsg',$forumid);
                     $pre->bindParam(':errmsg',$jsonobj['error_msg']);
@@ -174,11 +177,11 @@ class tiebasign{
             }
         }
         
-        $this->db->query("UPDATE sign_notes SET last_sign = CURRENT_DATE(),now_sign=SELECT CURTIME() WHERE uid={$this->uid}");
+        $this->db->query("UPDATE tieba_sign_cookies SET last_sign = CURRENT_TIMESTAMP() WHERE cid={$this->cid}");
         //签到完成检查是否都签到成功
         $this->getmylike();
         if(empty($this->forumid)){
-            $this->db->query("UPDATE sign_notes SET end_sign = CURRENT_DATE() WHERE uid={$this->uid}");
+            $this->db->query("UPDATE tieba_sign_cookies SET end_sign = CURRENT_DATE() WHERE cid={$this->cid}");
         }
         
     }

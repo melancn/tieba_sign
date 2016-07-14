@@ -1,21 +1,9 @@
 <?php
 include('my.php');
+$title = $config['index']['version'] = '设置用户';
+$stylearr = array('file/style.css','file/user.css');
+include('template/header.html');
 ?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>设置用户</title>
-<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="file/style.css" />
-<link rel="stylesheet" type="text/css" href="file/user.css" />
-</head>
-<body>
-<div class="top">
-	<h1><strong><?php echo $config['index']['title']?></strong> 设置用户</h1>
-	<p><?php echo $config['index']['author']?></p>
-</div>
-<div class="main">
 <div class="show">
 	<h2>用户设置</h2>
 	<table><tbody>

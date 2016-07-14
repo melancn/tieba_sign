@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title><?php echo $title?></title>
+<?php foreach($stylearr as $style): ?>
+<link rel="stylesheet" type="text/css" href="<?php echo $style ?>" />
+<?php endforeach;?>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+</head>
+<body>
+<div class="top">
+	<h1><strong><?php echo $config['index']['title']?></strong> <?php echo $config['index']['version']?></h1>
+	<p><?php echo $config['index']['author']?></p>
+</div>
+<div class="main">
