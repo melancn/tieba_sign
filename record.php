@@ -33,16 +33,16 @@ include('connect.php');
 			<th>还不支持签到的吧</th>
 		</tr>
     <?php 
-    $result = $pdo->query('SELECT count(*) as c FROM sign_notes')->fetch();
+    $result = $pdo->query('SELECT count(*) as c FROM tieba_sign_cookies where uid='.$_SESSION['uid'])->fetch();
     $count = $result['c'];
-	$result = $pdo->query('SELECT cname,ct,end_sign,tnum,uid FROM sign_notes');
+	$result = $pdo->query('SELECT uname,status,end_sign,forum_num,cid FROM tieba_sign_cookies where status >=0 and uid='.$_SESSION['uid']);
     $cookiestatus = array(1=>'有效',2=>'无效');
     while($r = $result->fetch()){
-        $res = $pdo->query('SELECT COUNT(*) as c FROM tieba_list WHERE uid='.$r['uid'])->fetch();
+        $res = $pdo->query('SELECT COUNT(*) as c FROM tieba_sign_history WHERE cid='.$r['cid'])->fetch();
         $remain = $res['c'];
-        $res = $pdo->query('SELECT COUNT(*) as c FROM history_notes WHERE uid='.$r['uid'].' AND type = 3')->fetch();
+        $res = $pdo->query('SELECT COUNT(*) as c FROM tieba_sign_history WHERE cid='.$r['cid'].' AND type = 3')->fetch();
         $notsign = $res['c'];
-		echo '<tr><td>'.$r['cname'].'</td><td>'.$cookiestatus[$r['ct']].'</td><td>'.$r['end_sign'].'</td><td>'.$r['tnum'].'</td><td>'.$remain.'</td><td>'.$notsign.'</td></tr>';
+		echo '<tr><td>'.$r['uname'].'</td><td>'.$cookiestatus[$r['status']].'</td><td>'.$r['end_sign'].'</td><td>'.$r['forum_num'].'</td><td>'.$remain.'</td><td>'.$notsign.'</td></tr>';
 	}
     if(!$count)echo "<tr><th colspan=6>暂无用户</th></tr>";
 	else echo "<tr><th colspan=6>共".$count."个用户</th></tr>";?>

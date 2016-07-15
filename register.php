@@ -27,13 +27,18 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) != 'POST'){
 }else{
     //验证用户信息 TODO
     if(mb_strlen($_POST['username']) > 10) $_SESSION['msg'] = '用户名长度超出限制';
-    //邮箱地址有效性验证
-    
+    //邮箱地址有效性验证 TODO 发送邮件验证
+    if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) $_SESSION['msg'] = '邮箱地址不正确';
+    if(!empty($_SESSION['msg'])){
+        header("Location:index.php");
+        exit;
+    }
     
     include('connect.php');
 
-    $pre = $pdo->prepare("SELECT * FROM tieba_sign_user where username=:username limit 1");
+    $pre = $pdo->prepare("SELECT * FROM tieba_sign_user where username=:username or email=:email limit 1");
     $pre->bindParam(':username',$_POST['username']);
+    $pre->bindParam(':email',$_POST['email']);
     $pre->execute();
     $errorInfo = $pre->errorInfo();
     if($errorInfo[0] != 0){
@@ -56,7 +61,10 @@ if(strtoupper($_SERVER['REQUEST_METHOD']) != 'POST'){
             $_SESSION['msg'] = $errorInfo[2];
         }else{
             $_SESSION['uid'] = $pdo->lastInsertId();
+            //TODO 发送邮件验证有效性
         }
+    }else{
+        $_SESSION['uid'] = '用户已存在';
     }
     header("Location:index.php");
     
