@@ -151,19 +151,21 @@ class tiebasign{
                 if($jsonobj['error_code'] == 0 ){
                     if($jsonobj['user_info']['is_sign_in'] == 1){
                         $pre = $this->db->prepare("INSERT INTO tieba_sign_history (kw,cid,uid,type,time) VALUES (:kw_name,:cid,:uid,1,CURRENT_TIMESTAMP())");
-                        $pre->bindParam(':kw_name',$forum['forum_name']);
+                        $pre->bindParam(':kw_name',$pda['kw']);
                         $pre->bindParam(':cid',$this->cid);
                         $pre->bindParam(':uid',$this->uid);
                         $pre->execute();
                         $errorInfo = $this->db->errorInfo();
                         if($errorInfo[0] != 0) var_dump($errorInfo[2]);
-                        /* $pre = $this->db->prepare("DELETE FROM tieba_list WHERE kw_name = :kw_name AND uid=:uid");
-                        $pre->bindParam(':kw_name',$this->forum_name[$forumid]);
+                    }else{
+                        $pre = $this->db->prepare("INSERT INTO tieba_sign_history (kw,cid,uid,type,time) VALUES (:kw_name,:cid,:uid,0,CURRENT_TIMESTAMP())");//0未签到
+                        $pre->bindParam(':kw_name',$pda['kw']);
+                        $pre->bindParam(':cid',$this->cid);
                         $pre->bindParam(':uid',$this->uid);
                         $pre->execute();
-                        $errorInfo = $pre->errorInfo();
-                        if($errorInfo[0] != 0) var_dump($errorInfo[2]); */
                     }
+                    $errorInfo = $this->db->errorInfo();
+                    if($errorInfo[0] != 0) var_dump($errorInfo[2]);
                     
                 }else{
                     $pre = $this->db->prepare("INSERT INTO tieba_sign_error_code (code,usermsg,errmsg) VALUES (:code,:usermsg,:errmsg)");

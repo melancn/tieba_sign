@@ -38,7 +38,7 @@ include('connect.php');
 	$result = $pdo->query('SELECT uname,status,end_sign,forum_num,cid FROM tieba_sign_cookies where status >=0 and uid='.$_SESSION['uid']);
     $cookiestatus = array(1=>'有效',2=>'无效');
     while($r = $result->fetch()){
-        $res = $pdo->query('SELECT COUNT(*) as c FROM tieba_sign_history WHERE cid='.$r['cid'])->fetch();
+        $res = $pdo->query('SELECT COUNT(*) as c FROM tieba_sign_history WHERE type=0 and cid='.$r['cid'])->fetch();
         $remain = $res['c'];
         $res = $pdo->query('SELECT COUNT(*) as c FROM tieba_sign_history WHERE cid='.$r['cid'].' AND type = 3')->fetch();
         $notsign = $res['c'];

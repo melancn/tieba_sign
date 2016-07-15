@@ -36,6 +36,7 @@ CREATE TABLE `tieba_sign_history` (
   PRIMARY KEY (`hid`),
   KEY `uid` (`uid`),
   KEY `cid` (`cid`),
+  KEY `cid` (`time`,`type`,`cid`),
   CONSTRAINT `tieba_sign_history_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `tieba_sign_user` (`uid`),
   CONSTRAINT `tieba_sign_history_ibfk_2` FOREIGN KEY (`cid`) REFERENCES `tieba_sign_cookies` (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -46,5 +47,5 @@ CREATE TABLE `tieba_sign_error_code` (
   `usermsg` tinytext NOT NULL,
   `errmsg` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
