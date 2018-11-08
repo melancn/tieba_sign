@@ -35,7 +35,6 @@ CREATE TABLE `tieba_sign_history` (
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`hid`),
   KEY `uid` (`uid`),
-  KEY `cid` (`cid`),
   KEY `cid` (`time`,`type`,`cid`),
   CONSTRAINT `tieba_sign_history_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `tieba_sign_user` (`uid`),
   CONSTRAINT `tieba_sign_history_ibfk_2` FOREIGN KEY (`cid`) REFERENCES `tieba_sign_cookies` (`cid`)
@@ -48,4 +47,3 @@ CREATE TABLE `tieba_sign_error_code` (
   `errmsg` tinytext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
